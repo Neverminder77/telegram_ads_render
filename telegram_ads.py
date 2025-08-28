@@ -8,10 +8,11 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 api_id = 29751829
 api_hash = "d18da10530e271c35846a0bc8980d2f6"
 
-# Пути к файлам (в одной папке с этим скриптом)
+# Пути к файлам
 base_path = os.path.dirname(os.path.abspath(__file__))
 chats_file = os.path.join(base_path, "chats.txt")
 message_file = os.path.join(base_path, "message.txt")
+session_file = os.path.join(base_path, "session.session")  # Сюда загрузи свою сессию
 
 # ------------------ ЧТЕНИЕ ФАЙЛОВ ------------------
 with open(chats_file, "r", encoding="utf-8") as f:
@@ -22,7 +23,7 @@ def get_message():
         return f.read().strip()
 
 # ------------------ ИНИЦИАЛИЗАЦИЯ КЛИЕНТА ------------------
-client = TelegramClient("session", api_id, api_hash)
+client = TelegramClient(session_file, api_id, api_hash)
 
 # ------------------ ФУНКЦИЯ РАССЫЛКИ ------------------
 async def send_ads():
