@@ -1,23 +1,22 @@
 import asyncio
-import time
 import os
+import time
 from telethon import TelegramClient
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # ------------------ НАСТРОЙКИ ------------------
 api_id = 29751829
 api_hash = "d18da10530e271c35846a0bc8980d2f6"
 
-# Пути к файлам (они должны быть в одной папке с этим скриптом)
+# Пути к файлам (в одной папке с этим скриптом)
 base_path = os.path.dirname(os.path.abspath(__file__))
 chats_file = os.path.join(base_path, "chats.txt")
 message_file = os.path.join(base_path, "message.txt")
 
 # ------------------ ЧТЕНИЕ ФАЙЛОВ ------------------
-# Список чатов
 with open(chats_file, "r", encoding="utf-8") as f:
     chats = [line.strip() for line in f if line.strip()]
 
-# Функция для получения актуального текста рекламы
 def get_message():
     with open(message_file, "r", encoding="utf-8") as f:
         return f.read().strip()
@@ -38,6 +37,14 @@ async def send_ads():
         time.sleep(15)  # задержка 15 секунд между чатами
     print("⏹️ Рассылка завершена.")
 
+# ------------------ НАСТРОЙКА АВТОМАТИЧЕСКОГО ЗАПУСКА ------------------
+async def main():
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(send_ads, "interval", hours=1)  # запуск каждый час
+    scheduler.start()
+    print("⏳ Скрипт запущен. Рассылка будет раз в час.")
+    await asyncio.Event().wait()  # держим скрипт в работе
+
 # ------------------ ЗАПУСК ------------------
 with client:
-    client.loop.run_until_complete(send_ads())
+    client.loop.run_until_complete(main())
